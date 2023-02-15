@@ -217,6 +217,10 @@
       </span>
       <a class="btn btn-success btn-lg count-button" style="background: #07c160; border: 0"
         onclick="set('inc')">计数+1</a>
+        <a class="btn btn-success btn-lg count-button" style="background: #07c160; border: 0"
+        onclick="register()">注册</a>
+        <a class="btn btn-success btn-lg count-button" style="background: #07c160; border: 0"
+        onclick="token()">登录</a>
       <div class="card" style="width: 320px; margin-bottom: 48px;">
         <div class="card-body">
           <img class="qrcode middle"
@@ -279,6 +283,33 @@
       if (res && res.data !== undefined) {
         $(".count-number").html(res.data);
       }
+    });
+  }
+  
+  function register() {
+    $.ajax("/api/register", {
+      method: "POST",
+      dataType: "json",
+      data: {
+        nickname: '22222233',
+        password: 'wwww222',
+        test: 'wwwwwww'
+      }
+    }).done(function (res) {
+
+    });
+  }
+  function token() {
+    $.ajax("/api/token", {
+      method: "POST",
+      dataType: "json",
+      data: {
+        account: '22222233',
+        password: 'wwww222',
+        type: 102
+      }
+    }).done(function (res) {
+
     });
   }
   function set(action) {
