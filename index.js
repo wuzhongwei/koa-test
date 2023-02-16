@@ -9,7 +9,10 @@ const { init: initDB } = require("./db");
 const routing = require('./routers');
 const status = require('./utils/status')
 
+const static = require('koa-static');
 const app = new Koa();
+app.use(static(__dirname + '/public'))
+
 app
   .use(error({
     postFormat: (e, {stack, ...rest}) => {

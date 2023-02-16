@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const bcryptjs = require('bcryptjs')
 const {sequelize} = require('../db')
-const {LoginTypeArr} = require('../utils/enum')
+const {LoginTypeArr, LoginType} = require('../utils/enum')
 // 定义数据模型
 const User = sequelize.define("User", {
   id: {
@@ -10,8 +10,8 @@ const User = sequelize.define("User", {
     autoIncrement: true
   },
   nickname: DataTypes.STRING,
-  account: DataTypes.STRING,
-  password: {
+  account: DataTypes.STRING, // 账号
+  password: { // 密码
     type: DataTypes.STRING,
     set(val) {
       const salt = bcryptjs.genSaltSync(10); // 盐
@@ -25,12 +25,30 @@ const User = sequelize.define("User", {
     unique: true
   }
 });
+User.verifyEmailPassword = async function (account, plainPassword, ctx) {
+  const user = await User.findOne({
+    where: {
+      account
+    }
+  })
+  console.log('www', user, ctx.success)
+  if (!user) {  
+    ctx.throw(200, '账号错误');
+  }
+  const corr = bcryptjs.compareSync(plainPassword, user.password)
+  console.log('corr', corr)
+  if (!corr) {
+    ctx.throw(200, '密码错误');
+  }
+  return user
+}
+
 class UserCtl {
   async register(ctx) {
     const { request } = ctx;
     
     ctx.verifyParams({
-      nickname: {type: 'string', min: 6, max: 32},
+      nickname: {type: 'string', required: false},
       account: {
         type: 'string',
         min: 4, max: 32,
@@ -45,18 +63,17 @@ class UserCtl {
       }
     })
     
-    const nickname = await User.findOne({
+    const account = await User.findOne({
       where: {
-        nickname: request.body.nickname
+        account: request.body.account
       }
     })
-    // if (nickname) {
-    //   throw new Error('名称已存在')
-    // } else {
-      
-    // }
-    await User.create(request.body);
-    ctx.success()
+    if (account) {
+      ctx.success('用户已存在', 200)
+    } else {
+      await User.create(request.body);
+      ctx.success()
+    }
   }
 
   async createToken(ctx) {
@@ -79,10 +96,23 @@ class UserCtl {
         required: true
       },
     })
-
-    ctx.body = '222';
+    console.log(request.body, request.body.type)
+    switch(request.body.type) {
+      case LoginType.USER_EMAIL:
+        await emailLogin(request.body.account, request.body.password, ctx)
+        break;
+      case LoginType.USER_MINI_PROGRAM:
+        break;
+      default:
+        
+        ctx.success('类型出错', 400, 202)
+        break;
+    }
   }
 
 }
-
+async function emailLogin(account, secret, ctx) {
+  const user = await User.verifyEmailPassword(account, secret, ctx)
+  console.log('登录成功')
+}
 module.exports = new UserCtl();

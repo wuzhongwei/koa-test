@@ -4,7 +4,7 @@ const router = new Router();
 const home = require('../controllers/home')
 
 // 首页
-router.get("/", home.index);
+// router.get("/", home.index);
 
 // 更新计数
 router.post("/api/count", home.postCount);

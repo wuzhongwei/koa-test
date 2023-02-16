@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const homePage = fs.readFileSync(path.join(__dirname, "../index.html"), "utf-8");
+const homePage = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf-8");
 const {sequelize} = require('../db')
 const { DataTypes } = require("sequelize");
 const Counter = sequelize.define("Counter", {
