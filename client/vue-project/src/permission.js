@@ -1,5 +1,6 @@
 import router from './router'
 import {useUserStore} from './stores/user'
+import {usePermissionStore} from './stores/permission'
 import { ElMessage } from 'element-plus'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
@@ -9,9 +10,11 @@ import getPageTitle from '@/utils/get-page-title'
 NProgress.configure({ showSpinner: false })
 const whiteList = ['/login'] // 白名单
 router.beforeEach(async(to, from, next) => {
+  const userStore = useUserStore()
+  const permissionStore = usePermissionStore()
+
   NProgress.start()
   document.title = getPageTitle(to.meta.title)
-
   const hasToken = getToken()
 
   if (hasToken) {
@@ -19,21 +22,21 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       // NProgress.done()
     } else {
-      const hasRoles = useUserStore.getters.roles && useUserStore.getters.roles.length > 0
+      const hasRoles = userStore.roles && userStore.roles.length > 0
       if (hasRoles) {
         next()
       } else {
         try {
+          const { roles } = await userStore.getInfo()
 
-          const { roles } = await useUserStore.dispatch('user/getInfo')
-
-          const accessRoutes = await useUserStore.dispatch('permission/generateRoutes', roles)
-
-          router.addRoutes(accessRoutes)
+          const accessRoutes = await permissionStore.generateRoutes(roles)
+          accessRoutes.forEach((item) => {
+            router.addRoute(item)
+          })
 
           next({ ...to, replace: true })
         } catch (error) {
-          await useUserStore.dispatch('user/resetToken')
+          await userStore.resetToken()
           ElMessage({message: error || '有错误', type: 'error'})
           next(`/login?redirect=${to.path}`)
           // NProgress.done()

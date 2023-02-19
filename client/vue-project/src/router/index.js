@@ -1,11 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 
-const constantRoutes = [
-  {
-    path: '/',
-    redirect: '/list',
-  },
+export const constantRoutes = [ // 固定页面
   {
     path: '/login',
     name: 'login',
@@ -24,17 +20,21 @@ const constantRoutes = [
   }
 ]
 
-const asyncRoutes = [
+export const asyncRoutes = [ // 权限页面
   {
     path: '/',
-    name: 'home',
     component: Home,
+    redirect: '/list',
+    meta: {
+      roles: ['admin'] //权限
+    },
     children: [
       {
         path: '/add',
         name: 'add',
         meta: {
           title: '添加',
+          roles: ['admin'] //权限
         },
         component: () => import('../views/Add.vue')
       },
@@ -43,7 +43,7 @@ const asyncRoutes = [
         name: 'list',
         meta: {
           title: '列表',
-          roles: [''] //权限
+          roles: ['admin'] //权限
         },
         component: () => import('../views/List.vue')
       }
