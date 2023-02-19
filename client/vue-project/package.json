@@ -9,7 +9,10 @@
   },
   "dependencies": {
     "element-plus": "^2.2.30",
+    "js-cookie": "^3.0.1",
     "normalize.css": "^8.0.1",
+    "nprogress": "^0.2.0",
+    "pinia": "^2.0.30",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },

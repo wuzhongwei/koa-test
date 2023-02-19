@@ -5,7 +5,7 @@ import ElementPlus from 'element-plus'
 import 'normalize.css'
 import 'element-plus/dist/index.css'
 import '@/assets/main.css'
-
+import './permission'
 const app = createApp(App)
 
 app.use(router)
