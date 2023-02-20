@@ -1,12 +1,5 @@
-module.exports = function() {
-  return async (ctx, next) => {
-    ctx.success = (msg, status = 200, code = 0) => {
-      ctx.status = status
-      ctx.body = {
-        code,
-        msg: msg
-      };
-    }
-    await next()
-  }
+module.exports = {
+  CODE_ERROR: -1,
+  CODE_SUCCESS: 0,
+  CODE_TOKEN_EXPIRED: -2
 }

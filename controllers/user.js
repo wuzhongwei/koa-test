@@ -2,6 +2,9 @@ const { DataTypes } = require("sequelize");
 const bcryptjs = require('bcryptjs')
 const {sequelize} = require('../db')
 const {LoginTypeArr, LoginType} = require('../utils/enum')
+const {generateToken} = require('../utils/utils')
+const {Auth} = require('../middlewares/auth')
+const Result = require('../utils/result')
 // 定义数据模型
 const User = sequelize.define("User", {
   id: {
@@ -31,12 +34,10 @@ User.verifyEmailPassword = async function (account, plainPassword, ctx) {
       account
     }
   })
-  console.log('www', user, ctx.success)
   if (!user) {  
     ctx.throw(200, '账号错误');
   }
   const corr = bcryptjs.compareSync(plainPassword, user.password)
-  console.log('corr', corr)
   if (!corr) {
     ctx.throw(200, '密码错误');
   }
@@ -96,10 +97,11 @@ class UserCtl {
         required: true
       },
     })
-    console.log(request.body, request.body.type)
+
+    let token = '';
     switch(request.body.type) {
       case LoginType.USER_EMAIL:
-        await emailLogin(request.body.account, request.body.password, ctx)
+        token = await emailLogin(request.body.account, request.body.password, ctx)
         break;
       case LoginType.USER_MINI_PROGRAM:
         break;
@@ -108,11 +110,36 @@ class UserCtl {
         ctx.success('类型出错', 400, 202)
         break;
     }
+    new Result({token},'登录成功').success(ctx)
+    // ctx.success({
+
+    // })
+    // console.log(ctx.success)
+    // ctx.body = {
+    //   token
+    // }
+  }
+
+  verifyToken(ctx) { // 验证token
+    ctx.verifyParams({
+      token: {
+        type: 'string',
+        min: 1,
+        required: true
+      }
+    })
+    const result = Auth.verifyToken(ctx.request.body.token)
+    if (result) {
+      new Result(result, 'ok').success(ctx)
+    } else {
+      new Result(result, '无效令牌', {status: 401}).fail(ctx)
+    }    
+
   }
 
 }
 async function emailLogin(account, secret, ctx) {
   const user = await User.verifyEmailPassword(account, secret, ctx)
-  console.log('登录成功')
+  return generateToken(user.id, Auth.USER) // 8是普通用户登录
 }
 module.exports = new UserCtl();

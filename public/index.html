@@ -221,6 +221,8 @@
         onclick="register()">注册</a>
         <a class="btn btn-success btn-lg count-button" style="background: #07c160; border: 0"
         onclick="token()">登录</a>
+        <a class="btn btn-success btn-lg count-button" style="background: #07c160; border: 0"
+        onclick="verify()">验证token</a>
       <div class="card" style="width: 320px; margin-bottom: 48px;">
         <div class="card-body">
           <img class="qrcode middle"
@@ -304,8 +306,19 @@
       dataType: "json",
       data: {
         account: 'test111',
-        password: '333333322',
+        password: '3333333',
         type: 101
+      }
+    }).done(function (res) {
+
+    });
+  }
+  function verify() {
+    $.ajax("/api/verify", {
+      method: "POST",
+      dataType: "json",
+      data: {
+        token: '222eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjQsInNjb3BlIjo4LCJpYXQiOjE2NzY5MDI5NzAsImV4cCI6MTY3Njk4OTM3MH0.6cPxEl_nEjopDbisUF3fiA48YcS2t-shnRvEkEfQJDc'
       }
     }).done(function (res) {
 
@@ -316,6 +329,9 @@
       method: "POST",
       contentType: "application/json; charset=utf-8",
       dataType: "json",
+      headers: {
+        Authorization: 'Bearer 222'
+      },
       data: JSON.stringify({
         action: action,
       }),

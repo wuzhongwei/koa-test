@@ -23,6 +23,12 @@ import { ref, reactive } from 'vue';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 import { Lock, User } from '@element-plus/icons-vue';
+import { useRouter, useRoute } from 'vue-router';
+import { setToken } from '@/utils/auth'; // get token from cookie
+import request from '@/utils/request';
+
+const router = useRouter()
+const route = useRoute()
 
 const formInline = reactive({
   username: 'admin',
@@ -40,16 +46,36 @@ const rules = {
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 };
 const login = ref<FormInstance>();
+const getOtherQuery = (query) => {
+  return Object.keys(query).reduce((acc, cur) => {
+    if (cur !== 'redirect') {
+      acc[cur] = query[cur]
+    }
+    return acc
+  }, {})
+}
 const submitForm = (formEl) => {
   if (!formEl) return;
   formEl.validate((valid: boolean) => {
     if (valid) {
       ElMessage.success('登录成功');
-      // localStorage.setItem('ms_username', formInline.username);
-      // const keys = permiss.defaultList[formInline.username == 'admin' ? 'admin' : 'user'];
-      // permiss.handleSet(keys);
-      // localStorage.setItem('ms_keys', JSON.stringify(keys));
-      // router.push('/');
+      request({
+        url: '/api/token',
+        method: 'post',
+        data: {
+          account: 'test111',
+          password: '3333333',
+          type: '101'
+        }
+      }).then((data) => {
+        setToken('www')
+        const redirect: any = route.query.redirect || ''
+        router.push({
+          path: redirect,
+          query: getOtherQuery(route.query)
+        });
+        console.log(data)
+      })
     } else {
       // ElMessage.error('登录成功');
       return false;
