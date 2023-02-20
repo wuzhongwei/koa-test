@@ -133,7 +133,7 @@ class UserCtl {
       new Result(result, 'ok').success(ctx)
     } else {
       new Result(result, '无效令牌', {status: 401}).fail(ctx)
-    }    
+    }
 
   }
 

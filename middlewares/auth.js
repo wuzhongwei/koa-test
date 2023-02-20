@@ -14,18 +14,18 @@ class Auth {
       var decode;
       if (!userToken || !userToken.name) {
         // ctx.throw(403, 'token失效');
-        return new Result('','token失效', {status: 403}).fail(ctx)
+        return new Result('','token失效', {status: 401}).fail(ctx)
       }
 
       try {
         decode = jwt.verify(userToken.name, security.secretKey)
       } catch (error) {
-        return new Result('','token过期或者不合法', {status: 200}).fail(ctx)
+        return new Result('','token过期或者不合法', {status: 401}).fail(ctx)
         // ctx.throw(200, 'token过期或者不合法')
       }
 
       if (decode.scope < this.level) {
-        return new Result('','权限不足', {status: 200}).fail(ctx)
+        return new Result('','权限不足', {status: 401}).fail(ctx)
         // ctx.throw(200, '权限不足')
       }
 
