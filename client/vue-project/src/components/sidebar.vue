@@ -21,6 +21,6 @@ const handleClick = (tab: TabPaneName) => {
 </script>
 <style>
 .main {
-  padding: 30px;
+  padding: 30px 0 0;
 }
 </style>

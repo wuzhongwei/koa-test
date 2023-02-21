@@ -28,7 +28,7 @@ class Auth {
         return new Result('','权限不足', {status: 401}).fail(ctx)
         // ctx.throw(200, '权限不足')
       }
-
+      
       ctx.auth = {
         uid: decode.uid,
         scope: decode.scope

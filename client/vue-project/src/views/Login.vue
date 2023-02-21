@@ -73,7 +73,7 @@ const submitForm = (formEl) => {
           Authorization: base()
         },
       }).then((data) => {
-
+        setToken('www')
       })
       // request({
       //   url: '/api/token',

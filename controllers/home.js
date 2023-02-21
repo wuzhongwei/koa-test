@@ -5,9 +5,17 @@ const {sequelize} = require('../db')
 const { DataTypes } = require("sequelize");
 const Result = require('../utils/result')
 
-
-const Counter = sequelize.define("Counter", {
-  count: {
+const UserInfo = sequelize.define("UserInfo", {
+  name: DataTypes.STRING,
+  phone: {
+    type: DataTypes.INTEGER,
+    unique: true
+  },
+  glasses: DataTypes.STRING,
+  eyeglass: DataTypes.STRING,
+  sunglasses: DataTypes.STRING,
+  oldGlasses: DataTypes.STRING,
+  integral: {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1,
@@ -18,34 +26,42 @@ class HomeCtl {
   index(ctx) {
     ctx.body = homePage;
   }
-  async postCount(ctx) {
-
-
+  async postList(ctx) {
     const { request } = ctx;
-    const { action } = request.body;
+    ctx.verifyParams({
+      name: {type: 'string', required: true},
+      phone: {
+        type: 'number',
+        required: true
+      }
+    })
+    const { action, phone } = request.body;
 
-
-    if (action === "inc") {
-      await Counter.create();
-    } else if (action === "clear") {
-      await Counter.destroy({
-        truncate: true,
-      });
+    if (action === "add") {
+      let project = await UserInfo.findOne({where: {phone: phone}})
+      if (project) {
+        new Result('', '手机号已存在').fail(ctx)
+      } else {
+        await UserInfo.create(request.body);
+        new Result('创建成功', 'ok').success(ctx)
+      }
+      // await UserInfo.create(request.body);
     }
+    // else if (action === "clear") {
+    //   await UserInfo.destroy({
+    //     truncate: true,
+    //   });
+    // }
   
-    ctx.body = {
-      code: 0,
-      data: await Counter.count(),
-      uid: ctx.auth.uid
-    };
-  }
-  async getCount(ctx) {
-    const result = await Counter.count();
-    new Result({token: 'wwww'},'登录成功').success(ctx)
     // ctx.body = {
     //   code: 0,
-    //   data: result,
+    //   data: await UserInfo.count(),
+    //   uid: ctx.auth.uid
     // };
+  }
+  async getUserList(ctx) {
+    const result = await UserInfo.findAll();
+    new Result(result,'ok').success(ctx)
   }
 }
 
