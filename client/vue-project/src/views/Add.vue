@@ -45,8 +45,11 @@
 import { reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import {Base64} from 'js-base64';
+import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
-
+import { getToken } from '@/utils/auth';
+let isNext = true
+let timer = null
 const ruleFormRef = ref<FormInstance>()
 
 const ruleForm = reactive({
@@ -72,16 +75,21 @@ const handleChange = () => {
 
 }
 const base = function () {
-  let token: any = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjQsInNjb3BlIjo4LCJpYXQiOjE2NzY5OTcwMzYsImV4cCI6MTY3NzA4MzQzNn0.VXuvnrvDIzd5v4VBgEIQJZSJeyDtmmBc5dyefAnSz6o'
+  let token: any = getToken()
   token = Base64.encode(`${token}:`)
-  console.log('token', token)
   return `Basic ${token}`
 }
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
+  
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    isNext = true
+  }, 200)
+  if (!isNext) return
+  isNext = false
   formEl.validate((valid) => {
     if (valid) {
-      console.log('ruleForm', {...ruleForm})
       request({
         url: '/api/create',
         method: 'post',
@@ -93,7 +101,12 @@ const submitForm = (formEl: FormInstance | undefined) => {
           ...ruleForm
         }
       }).then((data) => {
-        ruleFormRef.value.resetFields()
+        if (data.code === 0) {
+          ElMessage.success('添加用户成功');
+          ruleFormRef.value.resetFields()
+        } else {
+          ElMessage.error('创建用户失败');
+        }
       })
     } else {
       console.log('error submit!')

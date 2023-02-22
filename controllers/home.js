@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const homePage = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf-8");
 const {sequelize} = require('../db')
-const { DataTypes } = require("sequelize");
+const { DataTypes, Op } = require("sequelize");
 const Result = require('../utils/result')
 
 const UserInfo = sequelize.define("UserInfo", {
@@ -60,8 +60,33 @@ class HomeCtl {
     // };
   }
   async getUserList(ctx) {
-    const result = await UserInfo.findAll();
-    new Result(result,'ok').success(ctx)
+    const {query} = ctx.request
+    let result;
+    let currentPage = +query.currentPage || 1;
+    let pageSizes = +query.pageSizes || 10
+    let total = 0
+
+    if (ctx.request.query.phone) {
+      result = await UserInfo.findAll({
+        where: {
+          [Op.or]: [
+            {
+              phone: ctx.request.query.phone
+            },
+            {
+              name: ctx.request.query.phone
+            }
+          ]
+        }
+      });
+    } else {
+      result = await UserInfo.findAll({
+        limit: pageSizes,
+        offset: (currentPage- 1) * pageSizes
+      })
+    }
+    total = await UserInfo.count()
+    new Result({list: result, currentPage, pageSizes, total},'ok').success(ctx)
   }
 }
 

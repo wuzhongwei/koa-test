@@ -24,8 +24,7 @@ import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 import { Lock, User } from '@element-plus/icons-vue';
 import { useRouter, useRoute } from 'vue-router';
-import {Base64} from 'js-base64'
-import { setToken } from '@/utils/auth'; // get token from cookie
+import { setToken } from '@/utils/auth';
 import request from '@/utils/request';
 
 const router = useRouter()
@@ -55,43 +54,27 @@ const getOtherQuery = (query) => {
     return acc
   }, {})
 }
-const base = function () {
-  let token: any = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjQsInNjb3BlIjo4LCJpYXQiOjE2NzY5MDg1NjksImV4cCI6MTY3Njk5NDk2OX0.Hytr9enyvReJr1rMMyKZLFHE51SWCFbrRB5fBkIeuds'
-  token = Base64.encode(`${token}:`)
-  console.log('token', token)
-  return `Basic ${token}`
-}
 const submitForm = (formEl) => {
   if (!formEl) return;
   formEl.validate((valid: boolean) => {
     if (valid) {
-      ElMessage.success('登录成功');
       request({
-        url: '/api/count',
+        url: '/api/token',
         method: 'post',
-        headers: {
-          Authorization: base()
-        },
-      }).then((data) => {
-        setToken('www')
+        data: {
+          account: 'test111',
+          password: '3333333',
+          type: '101'
+        }
+      }).then(({data}) => {
+        ElMessage.success('登录成功');
+        setToken(data.token)
+        const redirect: any = route.query.redirect || ''
+        router.push({
+          path: redirect,
+          query: getOtherQuery(route.query)
+        });
       })
-      // request({
-      //   url: '/api/token',
-      //   method: 'post',
-      //   data: {
-      //     account: 'test111',
-      //     password: '3333333',
-      //     type: '101'
-      //   }
-      // }).then((data) => {
-      //   setToken('www')
-      //   const redirect: any = route.query.redirect || ''
-      //   router.push({
-      //     path: redirect,
-      //     query: getOtherQuery(route.query)
-      //   });
-      //   console.log(data)
-      // })
     } else {
       // ElMessage.error('登录成功');
       return false;
