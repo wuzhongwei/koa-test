@@ -12,7 +12,7 @@
       <el-input v-model="ruleForm.name" maxlength="100" />
     </el-form-item>
     <el-form-item label="手机号" prop="phone">
-      <el-input v-model.number="ruleForm.phone" maxlength="100" />
+      <el-input v-model="ruleForm.phone" maxlength="100" />
     </el-form-item>
     <el-form-item label="眼镜架" prop="glasses">
       <el-input v-model="ruleForm.glasses" maxlength="100" />

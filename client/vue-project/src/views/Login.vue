@@ -31,8 +31,8 @@ const router = useRouter()
 const route = useRoute()
 
 const formInline = reactive({
-  username: 'admin',
-  password: '21213',
+  username: 'test111',
+  password: '3333333',
 })
 
 const rules = {
