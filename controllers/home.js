@@ -8,7 +8,7 @@ const Result = require('../utils/result')
 const UserInfo = sequelize.define("UserInfo", {
   name: DataTypes.STRING,
   phone: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     unique: true
   },
   glasses: DataTypes.STRING,
@@ -19,7 +19,9 @@ const UserInfo = sequelize.define("UserInfo", {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1,
-  },
+  }
+},{
+  timestamps: false
 });
 
 class HomeCtl {
@@ -31,7 +33,7 @@ class HomeCtl {
     ctx.verifyParams({
       name: {type: 'string', required: true},
       phone: {
-        type: 'number',
+        type: 'string',
         required: true
       }
     })
@@ -42,22 +44,15 @@ class HomeCtl {
       if (project) {
         new Result('', '手机号已存在').fail(ctx)
       } else {
-        await UserInfo.create(request.body);
-        new Result('创建成功', 'ok').success(ctx)
+        try {
+          await UserInfo.create(request.body);
+          new Result('创建成功', 'ok').success(ctx)
+        } catch (error) {
+          new Result('', '手机号已存在').fail(ctx)
+        }
       }
       // await UserInfo.create(request.body);
     }
-    // else if (action === "clear") {
-    //   await UserInfo.destroy({
-    //     truncate: true,
-    //   });
-    // }
-  
-    // ctx.body = {
-    //   code: 0,
-    //   data: await UserInfo.count(),
-    //   uid: ctx.auth.uid
-    // };
   }
   async getUserList(ctx) {
     const {query} = ctx.request
@@ -87,6 +82,47 @@ class HomeCtl {
     }
     total = await UserInfo.count()
     new Result({list: result, currentPage, pageSizes, total},'ok').success(ctx)
+  }
+
+  async removeUser(ctx) {
+    ctx.verifyParams({
+      id: {type: 'number', required: true}
+    })
+
+    const result = await UserInfo.destroy({
+      where: {
+        id: ctx.request.body.id
+      }
+    })
+
+    if (result) {
+      new Result(result,'ok').success(ctx)
+    } else {
+      new Result('删除失败','ok').fail(ctx)
+    }
+  }
+
+  async updateUser(ctx) {
+    const request = ctx.request
+    ctx.verifyParams({
+      name: {type: 'string', required: true},
+      phone: {
+        type: 'string',
+        required: true
+      }
+    })
+    console.log('request.body.id', request.body.id)
+    const result = await UserInfo.update(request.body, {
+      where: {
+        id: request.body.id
+      }
+    });
+    if (result) {
+      new Result(result, '更新成功').success(ctx)
+    } else {
+      new Result('', '更新失败').fail(ctx)
+    }
+
   }
 }
 
