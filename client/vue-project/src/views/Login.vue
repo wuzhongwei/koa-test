@@ -3,8 +3,8 @@
     <div class="ms-login">
       <div class="ms-title">后台管理系统</div>
       <el-form :rules="rules" ref="login" :model="formInline" class="ms-content">
-        <el-form-item prop="username">
-          <el-input v-model="formInline.username" placeholder="请输入用户名">
+        <el-form-item prop="account">
+          <el-input v-model="formInline.account" placeholder="请输入用户名">
             <template #prepend><el-button :icon="User"></el-button></template>
           </el-input>
         </el-form-item>
@@ -26,17 +26,18 @@ import { Lock, User } from '@element-plus/icons-vue';
 import { useRouter, useRoute } from 'vue-router';
 import { setToken } from '@/utils/auth';
 import request from '@/utils/request';
-
+import {useUserStore} from '@/stores/user'
+const userStore = useUserStore()
 const router = useRouter()
 const route = useRoute()
 
 const formInline = reactive({
-  username: 'test111',
-  password: '3333333',
+  account: 'admin',
+  password: 'admin123',
 })
 
 const rules = {
-  username: [
+  account: [
     {
       required: true,
       message: '请输入用户名',
@@ -62,13 +63,13 @@ const submitForm = (formEl) => {
         url: '/api/token',
         method: 'post',
         data: {
-          account: 'test111',
-          password: '3333333',
+          ...formInline,
           type: '101'
         }
       }).then(({data}) => {
         ElMessage.success('登录成功');
         setToken(data.token)
+        userStore.token = data.token
         const redirect: any = route.query.redirect || ''
         router.push({
           path: redirect,

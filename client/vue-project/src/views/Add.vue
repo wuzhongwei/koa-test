@@ -44,7 +44,6 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
-import {Base64} from 'js-base64';
 import { ElMessage } from 'element-plus';
 import request from '@/utils/request';
 import { getToken } from '@/utils/auth';
@@ -74,11 +73,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
 const handleChange = () => {
 
 }
-const base = function () {
-  let token: any = getToken()
-  token = Base64.encode(`${token}:`)
-  return `Basic ${token}`
-}
+
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   
@@ -93,9 +88,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
       request({
         url: '/api/create',
         method: 'post',
-        headers: {
-          Authorization: base()
-        },
         data: {
           action: 'add',
           ...ruleForm

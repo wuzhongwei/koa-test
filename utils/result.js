@@ -6,15 +6,15 @@ const {
   } = require('./status')
   
   class Result {
-    constructor(data, msg = '操作成功', options = {}) {
+    constructor(data, message = '操作成功', options = {}) {
       this.data = null
       if (arguments.length === 0) {
-        this.msg = '操作成功'
+        this.message = '操作成功'
       } else if (arguments.length === 1) {
-        this.msg = data
+        this.message = data
       } else {
         this.data = data
-        this.msg = msg
+        this.message = message
         if (options) {
           this.options = options
         }
@@ -27,7 +27,7 @@ const {
       }
       let base = {
         code: this.code,
-        msg: this.msg
+        message: this.message
       }
       if (this.data) {
         base.data = this.data

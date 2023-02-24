@@ -4,7 +4,7 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 export const useUserStore = defineStore('user', {
   state: () => {
     return { 
-      token: '',
+      token: getToken() || '',
       roles: [] // 权限
     }
   },

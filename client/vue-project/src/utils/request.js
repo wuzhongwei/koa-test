@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import {Base64} from 'js-base64';
 import {useUserStore} from '@/stores/user'
 import { getToken } from '@/utils/auth'
 let userStore = useUserStore()
@@ -8,14 +9,17 @@ const service = axios.create({
   baseURL: '/', // url = base url + request url
   timeout: 5000 // request timeout
 })
-
+const base = function () {
+  let token = getToken()
+  token = Base64.encode(`${token}:`)
+  return `Basic ${token}`
+}
 // request interceptor
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-
     if (userStore.token) {
-      config.headers['X-Token'] = getToken()
+      config.headers['Authorization'] = base()
     }
     return config
   },
@@ -32,7 +36,7 @@ service.interceptors.response.use(
     const res = response.data
 
     if (res.code !== 0) {
-      const errorMsg = res.msg || '请求失败'
+      const errorMsg = res.message || '请求失败'
       ElMessage({
         message: errorMsg,
         type: 'error',

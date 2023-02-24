@@ -98,10 +98,10 @@
 import { ref, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
-import {Base64} from 'js-base64'
+
 import type { FormInstance } from 'element-plus'
 import request from '@/utils/request';
-import { getToken } from '@/utils/auth';
+
 const value = ref('')
 const dialogFormVisible = ref(false)
 
@@ -118,18 +118,11 @@ let ruleForm = reactive({
   sunglasses: '', // 太阳镜
   oldGlasses: '', // 老花镜
 })
-const base = function () {
-  let token: any = getToken()
-  token = Base64.encode(`${token}:`)
-  return `Basic ${token}`
-}
+
 const removeHnalde = (id) => {
   request({
     url: '/api/remove',
     method: 'post',
-    headers: {
-      Authorization: base()
-    },
     data: {
       id
     }
@@ -172,9 +165,6 @@ const init = () => {
   request({
     url: '/api/userList',
     method: 'get',
-    headers: {
-      Authorization: base()
-    },
     params: {
       currentPage: currentPage.value,
       pageSizes: pageSizes.value
@@ -188,9 +178,6 @@ const seatchHandle = () => {
   request({
     url: '/api/userList',
     method: 'get',
-    headers: {
-      Authorization: base()
-    },
     params: {
       phone: value.value
     }
@@ -236,9 +223,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
       request({
         url: '/api/update',
         method: 'post',
-        headers: {
-          Authorization: base()
-        },
         data: {
           ...ruleForm
         }

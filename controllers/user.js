@@ -35,6 +35,7 @@ User.verifyEmailPassword = async function (account, plainPassword, ctx) {
     }
   })
   if (!user) {  
+    // return new Result('','账号错误').fail(ctx)
     ctx.throw(200, '账号错误');
   }
   const corr = bcryptjs.compareSync(plainPassword, user.password)
@@ -70,10 +71,10 @@ class UserCtl {
       }
     })
     if (account) {
-      ctx.success('用户已存在', 200)
+      new Result('','用户已存在').success(ctx)
     } else {
       await User.create(request.body);
-      ctx.success()
+      new Result('','ok').success(ctx)
     }
   }
 
@@ -107,17 +108,11 @@ class UserCtl {
         break;
       default:
         
-        ctx.success('类型出错', 400, 202)
+        // ctx.success('类型出错', 400, 202)
+        new Result('','类型出错').fail(ctx)
         break;
     }
     new Result({token},'登录成功').success(ctx)
-    // ctx.success({
-
-    // })
-    // console.log(ctx.success)
-    // ctx.body = {
-    //   token
-    // }
   }
 
   verifyToken(ctx) { // 验证token

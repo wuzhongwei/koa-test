@@ -10,7 +10,7 @@ const {CODE_ERROR} = require('./utils/status')
 // const Result = require('./middlewares/result')
 
 const app = new Koa();
-app.use(static(__dirname + '/public'))
+app.use(static(__dirname + '/client/vue-project/dist'))
 
 app
   .use(error({
