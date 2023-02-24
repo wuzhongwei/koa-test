@@ -25,7 +25,7 @@ RUN npm install
 # 将当前目录（dockerfile所在目录）下所有文件都拷贝到工作目录下（.gitignore中的文件除外）
 COPY . /app
 RUN cd ./client/vue-project
-RUN npm run build
+ENTRYPOINT ["npm", "build"]
 RUN ../../
 # 执行启动命令.
 # 写多行独立的CMD命令是错误写法！只有最后一行CMD命令会被执行，之前的都会被忽略，导致业务报错。
