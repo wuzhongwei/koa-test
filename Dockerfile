@@ -32,3 +32,4 @@ RUN ../../
 # 请参考[Docker官方文档之CMD命令](https://docs.docker.com/engine/reference/builder/#cmd)
 CMD ["npm", "start"]
 
+
