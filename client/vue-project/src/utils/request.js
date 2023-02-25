@@ -34,7 +34,6 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     const res = response.data
-
     if (res.code !== 0) {
       const errorMsg = res.message || '请求失败'
       ElMessage({
@@ -43,30 +42,29 @@ service.interceptors.response.use(
         duration: 5 * 1000
       })
 
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-        // to re-login
-        ElMessageBox.confirm('token已失效', '确认退出', {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          userStore.resetToken.then(() => {
-            location.reload()
-          })
-        })
-      }
       return Promise.reject(new Error(errorMsg))
     } else {
       return res
     }
   },
   error => {
-    ElMessage({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
+    if (error.response.status === 401) {
+      // to re-login
+      ElMessageBox.confirm('token已失效', '确认退出', {
+        confirmButtonText: '重新登录',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        userStore.resetToken()
+        location.reload()
+      })
+    } else {
+      ElMessage({
+        message: error.message,
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
     return Promise.reject(error)
   }
 )

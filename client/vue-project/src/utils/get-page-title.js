@@ -1,4 +1,4 @@
-const title = 'Vue Element Admin'
+const title = '亮景眼镜'
 
 export default function getPageTitle(pageTitle) {
   if (pageTitle) {

@@ -26,6 +26,9 @@
     <el-form-item label="老花镜" prop="oldGlasses">
       <el-input v-model="ruleForm.oldGlasses" maxlength="100" />
     </el-form-item>
+    <el-form-item label="度数" prop="degrees">
+      <el-input v-model="ruleForm.degrees" maxlength="100" />
+    </el-form-item>
     <el-form-item label="积分" prop="integral">
       <el-input-number
         v-model="ruleForm.integral"
@@ -59,6 +62,7 @@ const ruleForm = reactive({
   eyeglass: '', // 眼镜片
   sunglasses: '', // 太阳镜
   oldGlasses: '', // 老花镜
+  degrees: '' // 度数
 })
 
 

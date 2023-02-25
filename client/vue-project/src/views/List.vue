@@ -19,6 +19,7 @@
       <el-table-column prop="eyeglass" label="眼镜片" />
       <el-table-column prop="sunglasses" label="太阳镜" />
       <el-table-column prop="oldGlasses" label="老花镜" />
+      <el-table-column prop="degrees" label="度数" />
       <el-table-column prop="integral" label="积分" />
       <el-table-column label="操作" width="150">
         <template #default="scope">
@@ -73,6 +74,9 @@
         <el-form-item label="老花镜" prop="oldGlasses">
           <el-input v-model="ruleForm.oldGlasses" maxlength="100" />
         </el-form-item>
+        <el-form-item label="度数" prop="degrees">
+          <el-input v-model="ruleForm.degrees" maxlength="100" />
+        </el-form-item>
         <el-form-item label="积分" prop="integral">
           <el-input-number
             v-model="ruleForm.integral"
@@ -117,6 +121,7 @@ let ruleForm = reactive({
   eyeglass: '', // 眼镜片
   sunglasses: '', // 太阳镜
   oldGlasses: '', // 老花镜
+  degrees: '' // 度数
 })
 
 const removeHnalde = (id) => {

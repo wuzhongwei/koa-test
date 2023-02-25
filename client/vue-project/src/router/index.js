@@ -11,6 +11,14 @@ export const constantRoutes = [ // 固定页面
     component: () => import('../views/Login.vue')
   },
   {
+    path: '/mobile',
+    name: 'mobile',
+    meta: {
+      title: '亮景眼镜',
+    },
+    component: () => import('../views/Mobile.vue')
+  },
+  {
     path: '/404',
     name: '404',
     meta: {
