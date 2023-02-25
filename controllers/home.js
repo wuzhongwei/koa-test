@@ -15,6 +15,7 @@ const UserInfo = sequelize.define("UserInfo", {
   eyeglass: DataTypes.STRING,
   sunglasses: DataTypes.STRING,
   oldGlasses: DataTypes.STRING,
+  degrees: DataTypes.STRING,
   integral: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -84,6 +85,27 @@ class HomeCtl {
     new Result({list: result, currentPage, pageSizes, total},'ok').success(ctx)
   }
 
+  async getUserItem(ctx) {
+    let result = {};
+    let { phone } = ctx.request.query
+    if (phone) {
+      result = await UserInfo.findOne({
+        where: {
+          [Op.or]: [
+            {
+              phone: phone
+            },
+            {
+              name: phone
+            }
+          ]
+        }
+      });
+    }
+    new Result(result,'ok').success(ctx)
+
+  }
+
   async removeUser(ctx) {
     ctx.verifyParams({
       id: {type: 'number', required: true}
@@ -111,7 +133,6 @@ class HomeCtl {
         required: true
       }
     })
-    console.log('request.body.id', request.body.id)
     const result = await UserInfo.update(request.body, {
       where: {
         id: request.body.id

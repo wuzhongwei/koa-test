@@ -18,11 +18,17 @@ router.post("/api/remove", new Auth().m, home.removeUser);
 // 修改用户
 router.post("/api/update", new Auth().m, home.updateUser);
 
+// 获取用户列表不带权限校验
+router.get("/api/userListNoAuth", home.getUserItem);
+
 // // 小程序调用，获取微信 Open ID
-// router.get("/api/wx_openid", async (ctx) => {
+router.get("/api/wx_openid", async (ctx) => {
 //   if (ctx.request.headers["x-wx-source"]) {
 //     ctx.body = ctx.request.headers["x-wx-openid"];
 //   }
-// });
+  ctx.body = {
+      ...ctx.request.headers
+  }
+});
 
 module.exports = router

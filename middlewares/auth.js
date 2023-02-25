@@ -11,6 +11,7 @@ class Auth {
   get m() {
     return async (ctx, next) => {
       const userToken = basicAuth(ctx.req)
+      console.log('userToken', userToken)
       var decode;
       if (!userToken || !userToken.name) {
         // ctx.throw(403, 'token失效');

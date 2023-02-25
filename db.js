@@ -14,7 +14,7 @@ const sequelize = new Sequelize("nodejs_demo", MYSQL_USERNAME, MYSQL_PASSWORD, {
 
 // 数据库初始化方法
 async function init() {
-  await sequelize.sync({ });
+  await sequelize.sync({ alter: true });
 }
 
 // 导出初始化方法和模型
