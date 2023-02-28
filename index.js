@@ -10,10 +10,10 @@ const {CODE_ERROR} = require('./utils/status')
 // const Result = require('./middlewares/result')
 
 const app = new Koa();
-// app.use((ctx, next) => {
-//   console.log('ctx111111111111111', JSON.parse(JSON.stringify(ctx.query)))
-//   next()
-// })
+app.use((ctx, next) => {
+  console.log('ctx111111111111111', JSON.parse(JSON.stringify(ctx.query)))
+  next()
+})
 app.use(static(__dirname + '/client/vue-project/dist'))
 
 app
