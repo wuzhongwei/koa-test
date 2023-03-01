@@ -1,6 +1,7 @@
 const axios = require('axios')
 const fs = require('fs')
 const {appId, appsecret} = require('../config/config')
+const menu = require('./menu')
 const accessTokenPath = './accessToken.txt'
 
 class WXManager {
@@ -12,7 +13,6 @@ class WXManager {
     const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appsecret}`
     let {data} = await axios.get(url)
     data.expires_in = Date.now() + (data.expires_in - 300) * 1000 // 提前5分钟过期
-    console.log('data.expires_in', data.expires_in)
     return data
   }
   // 保存accessToken
@@ -42,9 +42,8 @@ class WXManager {
     }
     return data.expires_in < Date.now()
   }
-  // 获取token是否有效
+  // 获取没有过期的token
   async fetchAccessToken() {
-
     if (this.tokenObj.expires_in && this.tokenObj.access_token && !this.isValidAccessToken(this.tokenObj)) {
       return Promise.resolve(this.tokenObj)
     }
@@ -52,9 +51,11 @@ class WXManager {
     try {
       const data = await this.readAccessToken()
       if (!this.isValidAccessToken(data)) { // token没有过期
+        console.log('没过期', data)
         this.tokenObj = data
         return Promise.resolve(data)
       } else { // token过期
+        console.log('已过期')
         const data = await this.getAccessToken()
         this.saveAccessToken(data)
       }
@@ -64,12 +65,26 @@ class WXManager {
     }
     
   }
+
+  async createMenu(menu) {
+    const url = `https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${this.tokenObj.access_token}`
+    let {data} = await axios.post(url, menu)
+    console.log('createMenu', data)
+  }
+
+  async deleteMenu() {
+    const url = `http请求方式：GET https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=${this.tokenObj.access_toke}`
+    let {data} = await axios.get(url)
+    console.log('deleteMenu', data)
+  }
 }
 
 
-// const w = new WXManager()
-// w.fetchAccessToken()
-// setTimeout(()=> {
-//   w.fetchAccessToken()
-// }, 3000)
+// (async function() { 创建微信菜单
+//   const w = new WXManager()
+//   await w.fetchAccessToken()
+//   await w.deleteMenu()
+//   await w.createMenu(menu)
+// })()
+
 module.exports = {}
