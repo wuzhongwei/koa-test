@@ -57,10 +57,12 @@ class WXManager {
       } else { // token过期
         console.log('已过期')
         const data = await this.getAccessToken()
+        this.tokenObj = data
         this.saveAccessToken(data)
       }
     } catch (error) {
       const data = await this.getAccessToken()
+      this.tokenObj = data
       this.saveAccessToken(data)
     }
     
@@ -87,4 +89,4 @@ class WXManager {
 //   await w.createMenu(menu)
 // })()
 
-module.exports = {}
+module.exports = WXManager

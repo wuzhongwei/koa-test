@@ -9,25 +9,20 @@
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input @keyup.enter="submitForm(login)" :type="passwordType?'text':'password'" v-model="formInline.password" placeholder="请输入密码">
+          <el-input @keyup.enter="submitForm(login)" type="password" v-model="formInline.password" placeholder="请输入密码">
             <template #prepend><el-button :icon="Lock"></el-button></template>
           </el-input>
-          <span class="show-pwd" @click="showPwd">
-            <el-icon v-if="passwordType"><View /></el-icon>
-            <el-icon v-else><Hide /></el-icon>
-          </span>
         </el-form-item>
-        <el-form-item><div class="jizhu"><el-checkbox v-model="checked1" label="记住密码" size="large" /></div></el-form-item>
-        <div class="btn-wrapper"><el-button type="primary" @click="submitForm(login)" :loading="loading">登录</el-button></div>
+        <div class="btn-wrapper"><el-button type="primary" @click="submitForm(login)">注册</el-button></div>
       </el-form>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive } from 'vue';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
-import { Lock, User, View, Hide } from '@element-plus/icons-vue';
+import { Lock, User } from '@element-plus/icons-vue';
 import { useRouter, useRoute } from 'vue-router';
 import { setToken } from '@/utils/auth';
 import request from '@/utils/request';
@@ -35,19 +30,12 @@ import {useUserStore} from '@/stores/user'
 const userStore = useUserStore()
 const router = useRouter()
 const route = useRoute()
-const account = localStorage.getItem('account') || ''
-const password = localStorage.getItem('password') || ''
-let takeNotes: any = localStorage.getItem('takeNotes') || true
-if (takeNotes) {
-  takeNotes = JSON.parse(takeNotes)
-}
+
 const formInline = reactive({
-  account, // admin
-  password, // admin123
+  account: 'admin',
+  password: 'admin123',
 })
-const passwordType = ref(false)
-const checked1 = ref(takeNotes)
-const loading = ref(false)
+
 const rules = {
   account: [
     {
@@ -67,16 +55,12 @@ const getOtherQuery = (query) => {
     return acc
   }, {})
 }
-const showPwd = () =>{
-  passwordType.value = !passwordType.value
-}
 const submitForm = (formEl) => {
   if (!formEl) return;
-  loading.value = true
   formEl.validate((valid: boolean) => {
     if (valid) {
       request({
-        url: '/api/token',
+        url: '/api/register',
         method: 'post',
         data: {
           ...formInline,
@@ -84,29 +68,11 @@ const submitForm = (formEl) => {
         }
       }).then((data) => {
         if (data.code === 0) {
-          ElMessage.success('登录成功');
-          if (checked1.value) {
-            localStorage.setItem('account', formInline.account)
-            localStorage.setItem('password', formInline.password)
-          } else {
-            localStorage.removeItem('account')
-            localStorage.removeItem('password')
-          }
-          localStorage.setItem('takeNotes', JSON.stringify(checked1.value))
-          data = data.data
-          setToken(data.token)
-          userStore.token = data.token
-          const redirect: any = route.query.redirect || ''
-          router.push({
-            path: redirect,
-            query: getOtherQuery(route.query)
-          });
+          ElMessage.success('注册成功');
+          router.push({name: 'login'})
         } else {
-          ElMessage.error(data.message);
+          ElMessage.success(data.message);
         }
-        
-      }).finally(() => {
-        loading.value = false
       })
     } else {
       // ElMessage.error('登录成功');
@@ -151,18 +117,4 @@ const submitForm = (formEl) => {
   height: 36px;
   margin-bottom: 10px;
 }
-.show-pwd {
-  position: absolute;
-  right: 10px;
-  cursor: pointer;
-  user-select: none;
-}
-.jizhu {
-  position: absolute;
-  right: 0;
-}
-.jizhu :deep(.el-checkbox__label) {
-  color: #000;
-}
-
 </style>

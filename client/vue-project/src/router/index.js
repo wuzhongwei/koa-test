@@ -19,6 +19,14 @@ export const constantRoutes = [ // 固定页面
     component: () => import('../views/Mobile.vue')
   },
   {
+    path: '/register',
+    name: 'register',
+    meta: {
+      title: '注册',
+    },
+    component: () => import('../views/Register.vue')
+  },
+  {
     path: '/404',
     name: '404',
     meta: {
@@ -66,7 +74,7 @@ export const asyncRoutes = [ // 权限页面
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
-  routes: constantRoutes.concat(asyncRoutes)
+  routes: constantRoutes
 })
 
 

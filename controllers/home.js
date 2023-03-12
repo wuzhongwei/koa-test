@@ -1,10 +1,12 @@
 const fs = require("fs");
+const axios = require("axios");
 const path = require("path");
 const homePage = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf-8");
 const {sequelize} = require('../db')
 const { DataTypes, Op } = require("sequelize");
 const Result = require('../utils/result')
-
+const {appId, appsecret} = require('../config/config')
+const WXManager = require('../services/wx')
 const UserInfo = sequelize.define("UserInfo", {
   name: DataTypes.STRING,
   phone: {
@@ -15,6 +17,8 @@ const UserInfo = sequelize.define("UserInfo", {
   eyeglass: DataTypes.STRING,
   sunglasses: DataTypes.STRING,
   oldGlasses: DataTypes.STRING,
+  openid: DataTypes.STRING,
+  unionid: DataTypes.STRING,
   degrees: DataTypes.STRING,
   integral: {
     type: DataTypes.INTEGER,
@@ -32,7 +36,6 @@ class HomeCtl {
   async postList(ctx) {
     const { request } = ctx;
     ctx.verifyParams({
-      name: {type: 'string', required: true},
       phone: {
         type: 'string',
         required: true
@@ -144,6 +147,30 @@ class HomeCtl {
       new Result('', '更新失败').fail(ctx)
     }
 
+  }
+
+  async wxPhone(ctx) {
+    let { code, loginCode } = ctx.request.query
+    let wx = new WXManager()
+    await wx.fetchAccessToken()
+    console.log('成功：=>', code, wx.tokenObj.access_token)
+   
+    let result = await axios({
+      url:  `https://api.weixin.qq.com/sns/jscode2session?appid=${appId}&secret=${appsecret}&js_code=${loginCode}&grant_type=authorization_code`,
+      method: "get"
+    })
+
+    let {data} = await axios({
+      url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${wx.tokenObj.access_token}`,
+      method: "post",
+      data: {
+        code: code
+      }
+    })
+    ctx.body = {
+      ...data,
+      ...result.data
+    }
   }
 }
 

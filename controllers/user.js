@@ -48,7 +48,7 @@ User.verifyEmailPassword = async function (account, plainPassword, ctx) {
 class UserCtl {
   async register(ctx) {
     const { request } = ctx;
-    
+
     ctx.verifyParams({
       nickname: {type: 'string', required: false},
       account: {
@@ -64,14 +64,14 @@ class UserCtl {
         type: 'password', required: true
       }
     })
-    
+
     const account = await User.findOne({
       where: {
         account: request.body.account
       }
     })
     if (account) {
-      new Result('','用户已存在').success(ctx)
+      new Result('','用户已存在').fail(ctx)
     } else {
       await User.create(request.body);
       new Result('','ok').success(ctx)

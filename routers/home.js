@@ -7,7 +7,7 @@ const {Auth} = require('../middlewares/auth')
 // router.get("/", home.index);
 
 // 创建
-router.post("/api/create", new Auth().m, home.postList);
+router.post("/api/create", home.postList);
 
 // 获取用户列表
 router.get("/api/userList", new Auth().m, home.getUserList);
@@ -21,14 +21,8 @@ router.post("/api/update", new Auth().m, home.updateUser);
 // 获取用户列表不带权限校验
 router.get("/api/userListNoAuth", home.getUserItem);
 
-// // 小程序调用，获取微信 Open ID
-router.get("/api/wx_openid", async (ctx) => {
-//   if (ctx.request.headers["x-wx-source"]) {
-//     ctx.body = ctx.request.headers["x-wx-openid"];
-//   }
-  ctx.body = {
-      ...ctx.request.headers
-  }
-});
+// 获取微信手机号
+router.get("/api/wx_phone", home.wxPhone);
+
 
 module.exports = router

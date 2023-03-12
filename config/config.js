@@ -1,9 +1,11 @@
+require('dotenv').config()
+console.log('prosess.evn', process.env.TOKEN_SECRET_KEY, process.env.APPID, process.env.APP_SECRET)
 module.exports = {
   security: {
-    secretKey: 'a94050803@.com',
+    secretKey: process.env.TOKEN_SECRET_KEY,
     expiresIn: 60 * 60 * 24 // 过期时间
   },
   wxToken: 'dxadsHTML23213',
-  appId: 'wxe1b4e90babbe32b4',
-  appsecret: 'c1194a8e2d58f6792d103c71de205a37'
+  appId: process.env.APPID,
+  appsecret: process.env.APP_SECRET
 }

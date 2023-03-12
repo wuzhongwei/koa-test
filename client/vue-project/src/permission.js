@@ -8,7 +8,7 @@ import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false })
-const whiteList = ['/login', '/mobile'] // 白名单
+const whiteList = ['/login', '/mobile', '/register'] // 白名单
 router.beforeEach(async(to, from, next) => {
   const userStore = useUserStore()
   const permissionStore = usePermissionStore()

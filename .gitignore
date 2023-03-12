@@ -3,3 +3,4 @@ docker-compose.yml
 Dockerfile.development
 .cloudbase
 package-lock.json
+.env

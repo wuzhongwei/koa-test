@@ -111,7 +111,7 @@ const dialogFormVisible = ref(false)
 
 let tableData = ref([])
 let currentPage = ref(1);
-let pageSizes = ref(4)
+let pageSizes = ref(10)
 let total = ref(0)
 let ruleForm = reactive({
   integral: 0, // 积分
