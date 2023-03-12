@@ -8,19 +8,28 @@ const Result = require('../utils/result')
 const {appId, appsecret} = require('../config/config')
 const WXManager = require('../services/wx')
 const UserInfo = sequelize.define("UserInfo", {
-  name: DataTypes.STRING,
-  phone: {
+  name: DataTypes.STRING, // 姓名
+  phone: { // 电话
     type: DataTypes.STRING,
     unique: true
   },
-  glasses: DataTypes.STRING,
-  eyeglass: DataTypes.STRING,
-  sunglasses: DataTypes.STRING,
-  oldGlasses: DataTypes.STRING,
+  glasses: DataTypes.STRING, // 眼镜架
+  eyeglass: DataTypes.STRING, // 眼镜片
+  sunglasses: DataTypes.STRING, // 太阳镜
+  oldGlasses: DataTypes.STRING, // 老花镜
   openid: DataTypes.STRING,
   unionid: DataTypes.STRING,
-  degrees: DataTypes.STRING,
-  integral: {
+  degrees: DataTypes.STRING, // 度数
+  naked: DataTypes.STRING, // 裸眼视力
+  correct: DataTypes.STRING, // 矫正视力 
+  age: DataTypes.STRING, // 年龄
+  address: DataTypes.STRING, // 地址
+  purchaseDate: DataTypes.STRING, // 购买日期
+  takingDate: DataTypes.STRING, // 取镜日期
+  model: DataTypes.STRING,// 型号
+  color: DataTypes.STRING,// 颜色
+  price: DataTypes.STRING,// 价格
+  integral: { // 积分
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1,
