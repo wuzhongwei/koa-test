@@ -8,27 +8,36 @@ const Result = require('../utils/result')
 const {appId, appsecret} = require('../config/config')
 const WXManager = require('../services/wx')
 const UserInfo = sequelize.define("UserInfo", {
-  name: DataTypes.STRING, // 姓名
+  name: DataTypes.STRING(100), // 姓名
   phone: { // 电话
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(100),
     unique: true
   },
-  glasses: DataTypes.STRING, // 眼镜架
-  eyeglass: DataTypes.STRING, // 眼镜片
-  sunglasses: DataTypes.STRING, // 太阳镜
-  oldGlasses: DataTypes.STRING, // 老花镜
-  openid: DataTypes.STRING,
-  unionid: DataTypes.STRING,
-  degrees: DataTypes.STRING, // 度数
-  naked: DataTypes.STRING, // 裸眼视力
-  correct: DataTypes.STRING, // 矫正视力 
-  age: DataTypes.STRING, // 年龄
-  address: DataTypes.STRING, // 地址
-  purchaseDate: DataTypes.STRING, // 购买日期
-  takingDate: DataTypes.STRING, // 取镜日期
-  model: DataTypes.STRING,// 型号
-  color: DataTypes.STRING,// 颜色
-  price: DataTypes.STRING,// 价格
+  glasses: DataTypes.STRING(100), // 眼镜架
+  eyeglass: DataTypes.STRING(100), // 眼镜片
+  eyeglassPrice: DataTypes.STRING(100), // 眼镜片价格
+  eyeglassSellingPrice: DataTypes.STRING(100), // 眼镜片售价
+  sunglasses: DataTypes.STRING(100), // 太阳镜
+  oldGlasses: DataTypes.STRING(100), // 老花镜
+  openid: DataTypes.STRING(100),
+  unionid: DataTypes.STRING(100),
+  degrees: DataTypes.STRING(100), // 度数
+  naked: DataTypes.STRING(100), // 裸眼视力
+  correct: DataTypes.STRING(100), // 矫正视力 
+  age: DataTypes.STRING(100), // 年龄
+  address: DataTypes.STRING(100), // 地址
+  purchaseDate: DataTypes.STRING(100), // 购买日期
+  takingDate: DataTypes.STRING(100), // 取镜日期
+  glassesModel: DataTypes.STRING(100), // 镜架型号
+  glassescolor: DataTypes.STRING(100), // 镜架颜色
+  glassesPrice: DataTypes.STRING(100), // 镜架价格
+  glassesSellingPrice: DataTypes.STRING(100), // 镜架售价
+  totalPrice: DataTypes.STRING(100), // 总价
+  frontmoney: DataTypes.STRING(100), // 定金
+  notyetPrice: DataTypes.STRING(100), // 尚欠
+  birthday: DataTypes.STRING(100), // 生日
+  occupation: DataTypes.STRING(100), // 职业
+  json: DataTypes.STRING(1234),
   integral: { // 积分
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -145,6 +154,7 @@ class HomeCtl {
         required: true
       }
     })
+    console.log('request.body', request.body)
     const result = await UserInfo.update(request.body, {
       where: {
         id: request.body.id
