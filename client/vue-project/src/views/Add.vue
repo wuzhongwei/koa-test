@@ -86,18 +86,10 @@
       <el-form-item label="尚欠" prop="notyetPrice">
         <el-input v-model="ruleForm.notyetPrice" maxlength="100" />
       </el-form-item>
-
-
-      <!-- <el-form-item label="太阳镜" prop="sunglasses">
-        <el-input v-model="ruleForm.sunglasses" maxlength="100" />
-      </el-form-item>
-      <el-form-item label="老花镜" prop="oldGlasses">
-        <el-input v-model="ruleForm.oldGlasses" maxlength="100" />
-      </el-form-item> -->
       <el-form-item label="积分" prop="integral">
         <el-input-number
           v-model="ruleForm.integral"
-          :min="1"
+          :min="0"
           controls-position="right"
         />
       </el-form-item>
@@ -164,7 +156,7 @@ let timer = null
 let data = [
   {
     name: '远用',
-    left: '右',
+    left: '右眼',
     spheric: '',
     luminosity: '',
     axial: '',
@@ -175,7 +167,7 @@ let data = [
   },
   {
     name: '远用',
-    left: '左',
+    left: '左眼',
     spheric: '',
     luminosity: '',
     axial: '',
@@ -186,7 +178,7 @@ let data = [
   },
   {
     name: '近用',
-    left: '右',
+    left: '右眼',
     spheric: '',
     luminosity: '',
     axial: '',
@@ -197,7 +189,7 @@ let data = [
   },
   {
     name: '近用',
-    left: '左',
+    left: '左眼',
     spheric: '',
     luminosity: '',
     axial: '',
@@ -209,7 +201,7 @@ let data = [
 ]
 const tableData = ref(JSON.parse(JSON.stringify(data)))
 const ruleFormRef = ref<FormInstance>()
-  const objectSpanMethod = ({
+const objectSpanMethod = ({
   row,
   column,
   rowIndex,

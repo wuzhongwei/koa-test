@@ -225,7 +225,7 @@ import request from '@/utils/request';
 let data = [
   {
     name: '远用',
-    left: '右',
+    left: '右眼',
     spheric: '',
     luminosity: '',
     axial: '',
@@ -236,7 +236,7 @@ let data = [
   },
   {
     name: '远用',
-    left: '左',
+    left: '左眼',
     spheric: '',
     luminosity: '',
     axial: '',
@@ -247,7 +247,7 @@ let data = [
   },
   {
     name: '近用',
-    left: '右',
+    left: '右眼',
     spheric: '',
     luminosity: '',
     axial: '',
@@ -258,7 +258,7 @@ let data = [
   },
   {
     name: '近用',
-    left: '左',
+    left: '左眼',
     spheric: '',
     luminosity: '',
     axial: '',
