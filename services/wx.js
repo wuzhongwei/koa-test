@@ -1,29 +1,32 @@
 const axios = require('axios')
 const fs = require('fs')
-const {appId, appsecret} = require('../config/config')
+const {appId, appsecret, gzhAppid, gzhSecret} = require('../config/config')
 const menu = require('./menu')
 const accessTokenPath = './accessToken.txt'
+const xcxTokenPath = './xcxToken.txt'
 
 class WXManager {
-  constructor() {
+  constructor(obj) {
     this.tokenObj = {}
+    this.gzhTokenObj = {}
+    this.options = obj || {}
   }
   // 获取微信accessToken
-  async getAccessToken() {
+  async getAccessToken(appId, appsecret) {
     const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appsecret}`
     let {data} = await axios.get(url)
     data.expires_in = Date.now() + (data.expires_in - 300) * 1000 // 提前5分钟过期
     return data
   }
   // 保存accessToken
- async saveAccessToken(data) {
+ async saveAccessToken(data, tokenFile) {
     data = JSON.stringify(data)
-    await fs.writeFileSync(accessTokenPath, data)
+    await fs.writeFileSync(tokenFile, data)
   }
   // 读取accessToken
-  readAccessToken() {
+  readAccessToken(tokenFile) {
     return new Promise((resolve, reject) => {
-      fs.readFile(accessTokenPath, (err, data) => {
+      fs.readFile(tokenFile, (err, data) => {
         if (!err) {
           data = JSON.parse(data)
           resolve(data)
@@ -32,6 +35,11 @@ class WXManager {
         }
       })
     })
+  }
+
+  init() {
+    this.gzhTokenObj = this.fetchAccessToken(this.options.gzhAppid, this.options.gzhSecret, accessTokenPath, this.gzhTokenObj) // 公众号
+    this.tokenObj = this.fetchAccessToken(this.options.appId, this.options.appsecret, xcxTokenPath, this.tokenObj) // 小程序
   }
 
 
@@ -43,50 +51,76 @@ class WXManager {
     return data.expires_in < Date.now()
   }
   // 获取没有过期的token
-  async fetchAccessToken() {
-    if (this.tokenObj.expires_in && this.tokenObj.access_token && !this.isValidAccessToken(this.tokenObj)) {
-      return Promise.resolve(this.tokenObj)
+  async fetchAccessToken(appId, appsecret, tokenFile, tokenObj) {
+    if (tokenObj.expires_in && tokenObj.access_token && !this.isValidAccessToken(tokenObj)) {
+      return Promise.resolve(tokenObj)
     }
 
     try {
-      const data = await this.readAccessToken()
+      const data = await this.readAccessToken(tokenFile)
       if (!this.isValidAccessToken(data)) { // token没有过期
-        console.log('没过期', data)
-        this.tokenObj = data
-        return Promise.resolve(data)
+        console.log(`没过期${tokenFile}`, data)
+        return data
       } else { // token过期
-        console.log('已过期')
-        const data = await this.getAccessToken()
-        this.tokenObj = data
-        this.saveAccessToken(data)
+        console.log(`已过期${tokenFile}`)
+        const data = await this.getAccessToken(appId, appsecret)
+        this.saveAccessToken(data, tokenFile)
+        return data
       }
     } catch (error) {
-      const data = await this.getAccessToken()
-      this.tokenObj = data
-      this.saveAccessToken(data)
+      const data = await this.getAccessToken(appId, appsecret)
+      this.saveAccessToken(data, tokenFile)
+      return data
     }
     
   }
 
   async createMenu(menu) {
-    const url = `https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${this.tokenObj.access_token}`
+    const url = `https://api.weixin.qq.com/cgi-bin/menu/create?access_token=${this.gzhTokenObj.access_token}`
     let {data} = await axios.post(url, menu)
     console.log('createMenu', data)
   }
 
   async deleteMenu() {
-    const url = `http请求方式：GET https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=${this.tokenObj.access_toke}`
+    const url = `https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=${this.gzhTokenObj.access_token}`
     let {data} = await axios.get(url)
     console.log('deleteMenu', data)
+  }
+  // 设置行业
+  async api_set_industry() {
+    const url = `https://api.weixin.qq.com/cgi-bin/template/api_set_industry?access_token=${this.gzhTokenObj.access_token}`
+    let {data} = await axios.post(url, {
+      "industry_id1":"1",
+      "industry_id2":"2"
+    })
+    console.log('setTrade', data)
+  }
+  // 获取行业
+  async get_industry() {
+    const url = `https://api.weixin.qq.com/cgi-bin/template/get_industry?access_token=${this.gzhTokenObj.access_token}`
+    let {data} = await axios.get(url)
+    console.log('getTrade', data)
+  }
+  // 获得模板ID
+  async api_add_template() {
+    const url = `https://api.weixin.qq.com/cgi-bin/template/api_add_template?access_token=${this.gzhTokenObj.access_token}`
+    let {data} = await axios.post(url, {
+      "template_id_short": "TM00015"
+    })
+    console.log('api_add_template', data)
   }
 }
 
 
-// (async function() { 创建微信菜单
-//   const w = new WXManager()
-//   await w.fetchAccessToken()
-//   await w.deleteMenu()
-//   await w.createMenu(menu)
-// })()
-
+(async function() {
+  const w = new WXManager({
+    appId, 
+    appsecret,
+    gzhAppid,
+    gzhSecret
+  })
+  await w.init()
+  // await w.api_set_industry()
+})()
+console.log('www')
 module.exports = WXManager
