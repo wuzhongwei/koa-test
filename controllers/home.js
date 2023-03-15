@@ -174,7 +174,7 @@ class HomeCtl {
     wx.init()
    
     let result = await axios({
-      url:  `https://api.weixin.qq.com/sns/jscode2session?appid=wxa62f5d4af8e5127c&secret=2341a9fe7bc581bbe5627ae7dbd616e9&js_code=${loginCode}&grant_type=authorization_code`,
+      url:  `https://api.weixin.qq.com/sns/jscode2session?appid=${appId}&secret=${appsecret}&js_code=${loginCode}&grant_type=authorization_code`,
       method: "get"
     })
     let {data} = await axios({
@@ -184,7 +184,6 @@ class HomeCtl {
         code: code
       }
     })
- 
     ctx.body = {
       ...data,
       ...result.data

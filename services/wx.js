@@ -123,7 +123,7 @@ class WXManager {
       "touser":"ol10m49BbAFKWyLsiSPvwbK0AP2c",
       "template_id":"KzeOlc84iyLhEdcyshYy_NdcBwI-GMc6celU_HluCVQ",
       "url":"http://weixin.qq.com/download",
-      "data":{
+      "x":{
               "first": {
                   "value":"恭喜你购买成功！",
                   "color":"#173177"
@@ -151,10 +151,10 @@ class WXManager {
 }
 
 
-(async function() {
-  const w = new WXManager()
-  await w.init()
-  await w.send()
-})()
+// (async function() {
+//   const w = new WXManager()
+//   await w.init()
+//   await w.send()
+// })()
 
 module.exports = WXManager

@@ -1,5 +1,5 @@
 require('dotenv').config()
-console.log('prosess.evn', process.env.TOKEN_SECRET_KEY, process.env.APPID, process.env.APP_SECRET)
+
 module.exports = {
   security: {
     secretKey: process.env.TOKEN_SECRET_KEY,
