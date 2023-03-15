@@ -37,9 +37,9 @@ class WXManager {
     })
   }
 
-  init() {
-    this.gzhTokenObj = this.fetchAccessToken(this.options.gzhAppid, this.options.gzhSecret, accessTokenPath, this.gzhTokenObj) // 公众号
-    this.tokenObj = this.fetchAccessToken(this.options.appId, this.options.appsecret, xcxTokenPath, this.tokenObj) // 小程序
+  async init() {
+    this.gzhTokenObj = await this.fetchAccessToken(gzhAppid, gzhSecret, accessTokenPath, this.gzhTokenObj) // 公众号
+    this.tokenObj = await this.fetchAccessToken(appId, appsecret, xcxTokenPath, this.tokenObj) // 小程序
   }
 
 
@@ -53,7 +53,7 @@ class WXManager {
   // 获取没有过期的token
   async fetchAccessToken(appId, appsecret, tokenFile, tokenObj) {
     if (tokenObj.expires_in && tokenObj.access_token && !this.isValidAccessToken(tokenObj)) {
-      return Promise.resolve(tokenObj)
+      return tokenObj
     }
 
     try {
@@ -93,34 +93,68 @@ class WXManager {
       "industry_id1":"1",
       "industry_id2":"2"
     })
-    console.log('setTrade', data)
+    console.log('setTrade', data, this.gzhTokenObj.access_token)
   }
   // 获取行业
   async get_industry() {
     const url = `https://api.weixin.qq.com/cgi-bin/template/get_industry?access_token=${this.gzhTokenObj.access_token}`
     let {data} = await axios.get(url)
-    console.log('getTrade', data)
+    console.log('getTrade', data, this.gzhTokenObj.access_token)
+  }
+  // 获得模板列表
+  async get_all_private_template() {
+    const url = `https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token=${this.gzhTokenObj.access_token}`
+    let {data} = await axios.get(url)
+    console.log('get_all_private_template', data)
   }
   // 获得模板ID
   async api_add_template() {
     const url = `https://api.weixin.qq.com/cgi-bin/template/api_add_template?access_token=${this.gzhTokenObj.access_token}`
     let {data} = await axios.post(url, {
-      "template_id_short": "TM00015"
+      "template_id_short": "OPENTM202419051"
     })
     console.log('api_add_template', data)
+  }
+
+  // 发送模板消息
+  async send() {
+    const url = `https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=${this.gzhTokenObj.access_token}`
+    let {data} = await axios.post(url, {
+      "touser":"ol10m49BbAFKWyLsiSPvwbK0AP2c",
+      "template_id":"KzeOlc84iyLhEdcyshYy_NdcBwI-GMc6celU_HluCVQ",
+      "url":"http://weixin.qq.com/download",
+      "data":{
+              "first": {
+                  "value":"恭喜你购买成功！",
+                  "color":"#173177"
+              },
+              "keyword1":{
+                  "value":"巧克力",
+                  "color":"#173177"
+              },
+              "keyword2": {
+                  "value":"39.8元",
+                  "color":"#173177"
+              },
+              "keyword3": {
+                  "value":"2014年9月22日",
+                  "color":"#173177"
+              },
+              "remark":{
+                  "value":"欢迎再次购买！",
+                  "color":"#173177"
+              }
+      }
+    })
+    console.log('send', data)
   }
 }
 
 
 (async function() {
-  const w = new WXManager({
-    appId, 
-    appsecret,
-    gzhAppid,
-    gzhSecret
-  })
+  const w = new WXManager()
   await w.init()
-  // await w.api_set_industry()
+  await w.send()
 })()
-console.log('www')
+
 module.exports = WXManager
