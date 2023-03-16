@@ -76,6 +76,11 @@ class HomeCtl {
       // await UserInfo.create(request.body);
     }
   }
+
+  async saveUser(ctx) {
+    const { request } = ctx;
+    console.log('request', request.query)
+  }
   async getUserList(ctx) {
     const {query} = ctx.request
     let result;
@@ -171,12 +176,13 @@ class HomeCtl {
   async wxPhone(ctx) {
     let { code, loginCode } = ctx.request.query
     let wx = new WXManager()
-    wx.init()
+    await wx.init()
    
     let result = await axios({
       url:  `https://api.weixin.qq.com/sns/jscode2session?appid=${appId}&secret=${appsecret}&js_code=${loginCode}&grant_type=authorization_code`,
       method: "get"
     })
+    console.log('wx.tokenObj.access_token', wx.tokenObj.access_token)
     let {data} = await axios({
       url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${wx.tokenObj.access_token}`,
       method: "post",

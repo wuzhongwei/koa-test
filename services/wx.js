@@ -52,9 +52,9 @@ class WXManager {
   }
   // 获取没有过期的token
   async fetchAccessToken(appId, appsecret, tokenFile, tokenObj) {
-    if (tokenObj.expires_in && tokenObj.access_token && !this.isValidAccessToken(tokenObj)) {
-      return tokenObj
-    }
+    // if (tokenObj.expires_in && tokenObj.access_token && !this.isValidAccessToken(tokenObj)) {
+    //   return tokenObj
+    // }
 
     try {
       const data = await this.readAccessToken(tokenFile)
