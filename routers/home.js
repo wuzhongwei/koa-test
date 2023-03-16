@@ -10,7 +10,7 @@ const {Auth} = require('../middlewares/auth')
 router.post("/api/create", home.postList);
 
 // 创建
-router.post("/api/saveUser", home.saveUser);
+router.get("/api/saveUser", home.saveUser);
 
 // 获取用户列表
 router.get("/api/userList", new Auth().m, home.getUserList);
