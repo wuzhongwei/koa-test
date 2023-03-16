@@ -80,6 +80,10 @@ class HomeCtl {
   async saveUser(ctx) {
     const { request } = ctx;
     console.log('request', request.query)
+    ctx.body = {
+      ...request.query
+    }
+    
   }
   async getUserList(ctx) {
     const {query} = ctx.request
