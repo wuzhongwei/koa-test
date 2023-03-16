@@ -1,11 +1,11 @@
 const fs = require("fs");
 const axios = require("axios");
 const path = require("path");
+const { DataTypes, Op } = require("sequelize");
 const homePage = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf-8");
 const {sequelize} = require('../db')
-const { DataTypes, Op } = require("sequelize");
 const Result = require('../utils/result')
-const {appId, appsecret} = require('../config/config')
+const {appId, appsecret, gzhAppid, gzhSecret} = require('../config/config')
 const WXManager = require('../services/wx')
 const UserInfo = sequelize.define("UserInfo", {
   name: DataTypes.STRING(100), // 姓名
@@ -20,6 +20,7 @@ const UserInfo = sequelize.define("UserInfo", {
   sunglasses: DataTypes.STRING(100), // 太阳镜
   oldGlasses: DataTypes.STRING(100), // 老花镜
   openid: DataTypes.STRING(100),
+  gzhOpenid: DataTypes.STRING(100),
   unionid: DataTypes.STRING(100),
   degrees: DataTypes.STRING(100), // 度数
   naked: DataTypes.STRING(100), // 裸眼视力
@@ -41,7 +42,7 @@ const UserInfo = sequelize.define("UserInfo", {
   integral: { // 积分
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 1,
+    defaultValue: 0,
   }
 },{
   timestamps: false
@@ -77,14 +78,6 @@ class HomeCtl {
     }
   }
 
-  async saveUser(ctx) {
-    const { request } = ctx;
-    console.log('request', request.query)
-    ctx.body = {
-      ...request.query
-    }
-    
-  }
   async getUserList(ctx) {
     const {query} = ctx.request
     let result;
@@ -175,6 +168,45 @@ class HomeCtl {
       new Result('', '更新失败').fail(ctx)
     }
 
+  }
+
+  async saveUser(ctx) {
+    const { request } = ctx;
+    const {wxOpenid, phone, returnurl, code} = request.query
+
+    const url = `https://api.weixin.qq.com/sns/oauth2/access_token?appid=${gzhAppid}&secret=${gzhSecret}&code=${code}&grant_type=authorization_code`
+
+    let {data} = await axios({
+      url,
+      method: "get"
+    })
+
+    if (data.errcode) {
+      console.log('saveUser error', data)
+      ctx.body = {
+        ...request.query,
+        ...data
+      }
+    }
+    console.log(wxOpenid, phone, returnurl, code)
+
+    let project = await UserInfo.findOne({where: {phone: phone}})
+
+    if (!project) {
+      try {
+        if (wxOpenid && data.openid) {
+          await UserInfo.create({
+            phone: phone,
+            openid: wxOpenid, // 微信openId
+            gzhOpenid: data.openid //公众号openId
+          });
+        }
+        
+      } catch (error) {
+        console.log('error', error)
+      }
+    }
+    ctx.redirect(returnurl)
   }
 
   async wxPhone(ctx) {
