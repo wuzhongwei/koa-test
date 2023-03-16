@@ -153,7 +153,7 @@
       <el-form-item label="积分" prop="integral">
         <el-input-number
           v-model="ruleForm.integral"
-          :min="1"
+          :min="0"
           controls-position="right"
         />
       </el-form-item>
