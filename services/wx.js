@@ -15,6 +15,7 @@ class WXManager {
   async getAccessToken(appId, appsecret) {
     const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appsecret}`
     let {data} = await axios.get(url)
+    console.log('data', data, appId, appsecret)
     data.expires_in = Date.now() + (data.expires_in - 300) * 1000 // 提前5分钟过期
     return data
   }
@@ -117,33 +118,32 @@ class WXManager {
   }
 
   // 发送模板消息
-  async send() {
+  async send({openId, gift = '礼品兑换', consume, surplus, newDate}) {
     const url = `https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=${this.gzhTokenObj.access_token}`
     let {data} = await axios.post(url, {
-      "touser":"ol10m49BbAFKWyLsiSPvwbK0AP2c",
-      "template_id":"KzeOlc84iyLhEdcyshYy_NdcBwI-GMc6celU_HluCVQ",
-      "url":"http://weixin.qq.com/download",
-      "x":{
-              "first": {
-                  "value":"恭喜你购买成功！",
-                  "color":"#173177"
-              },
-              "keyword1":{
-                  "value":"巧克力",
-                  "color":"#173177"
-              },
-              "keyword2": {
-                  "value":"39.8元",
-                  "color":"#173177"
-              },
-              "keyword3": {
-                  "value":"2014年9月22日",
-                  "color":"#173177"
-              },
-              "remark":{
-                  "value":"欢迎再次购买！",
-                  "color":"#173177"
-              }
+      "touser": openId,
+      "template_id":"4Yh8OKfn6TxmHIzNJO7xjM7h9soyVG-frPcbTHeKYhQ",
+      "data": {
+        "first": {
+            "value":"尊敬的会员你好，积分消费成功",
+            "color":"#173177"
+        },
+        "keyword1": {
+          "value": gift,
+          "color":"#173177"
+        },
+        "keyword2": {
+            "value": consume,
+            "color":"#173177"
+        },
+        "keyword3": {
+            "value": surplus,
+            "color":"#173177"
+        },
+        "keyword4": {
+          "value": newDate,
+          "color":"#173177"
+        }
       }
     })
     console.log('send', data)
@@ -155,6 +155,7 @@ class WXManager {
 //   const w = new WXManager()
 //   await w.init()
 //   await w.send()
+//   console.log('发送成功')
 // })()
 
 module.exports = WXManager

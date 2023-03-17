@@ -73,6 +73,7 @@
         label-width="100px"
         class="demo-ruleForm"
         inline
+        v-loading="loading"
       >
       <el-form-item label="姓名" prop="name">
         <el-input v-model="ruleForm.name" maxlength="100" style="width:196px" />
@@ -164,6 +165,7 @@
         :span-method="objectSpanMethod"
         :header-cell-style="headerStyle"
         stripe
+        v-loading="loading"
       >
         <el-table-column align="center" prop="name" label=""/>
         <el-table-column align="center" prop="left" label=""/>
@@ -268,6 +270,7 @@ let data = [
     naked: '',
   }
 ]
+const loading = ref(false)
 const value = ref('')
 const tableDataOne = ref(data)
 const dialogFormVisible = ref(false)
@@ -424,6 +427,7 @@ const resetForm = (formEl: FormInstance | undefined) => {
 }
 
 const submitForm = (formEl: FormInstance | undefined) => {
+  
   if (!formEl) return
   
   clearTimeout(timer);
@@ -435,6 +439,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
   formEl.validate((valid) => {
     if (valid) {
       console.log('www',tableDataOne.value, JSON.stringify(tableDataOne.value))
+      loading.value = true
       request({
         url: '/api/update',
         method: 'post',
@@ -450,6 +455,8 @@ const submitForm = (formEl: FormInstance | undefined) => {
         } else {
           ElMessage.error('修改失败');
         }
+      }).finally(() => {
+        loading.value = false
       })
     } else {
       console.log('error submit!')

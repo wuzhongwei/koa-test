@@ -9,6 +9,7 @@
       label-width="70px"
       class="demo-ruleForm"
       inline
+      v-loading="loading"
     >
       <el-form-item label="姓名" prop="name">
         <el-input v-model="ruleForm.name" maxlength="100" style="width:196px" />
@@ -100,6 +101,7 @@
       :span-method="objectSpanMethod"
       :header-cell-style="headerStyle"
       stripe
+      v-loading="loading"
     >
       <el-table-column align="center" prop="name" label=""/>
       <el-table-column align="center" prop="left" label=""/>
@@ -199,6 +201,7 @@ let data = [
     naked: '',
   }
 ]
+const loading = ref(false)
 const tableData = ref(JSON.parse(JSON.stringify(data)))
 const ruleFormRef = ref<FormInstance>()
 const objectSpanMethod = ({
@@ -278,6 +281,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
   isNext = false
   formEl.validate((valid) => {
     if (valid) {
+      loading.value = true
       request({
         url: '/api/create',
         method: 'post',
@@ -293,6 +297,8 @@ const submitForm = (formEl: FormInstance | undefined) => {
         } else {
           ElMessage.error('创建用户失败');
         }
+      }).finally(() => {
+        loading.value = false
       })
     } else {
       console.log('error submit!')

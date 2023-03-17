@@ -151,18 +151,42 @@ class HomeCtl {
     const request = ctx.request
     ctx.verifyParams({
       name: {type: 'string', required: true},
+      integral: {type: 'number', required: false},
       phone: {
         type: 'string',
         required: true
       }
     })
-    console.log('request.body', request.body)
+    const user = await UserInfo.findOne({ // 先获取用户积分
+      where: {
+        id: request.body.id
+      }
+    })
     const result = await UserInfo.update(request.body, {
       where: {
         id: request.body.id
       }
     });
+    
+    
     if (result) {
+      
+      let wx = new WXManager()
+      await wx.init()
+      const date = new Date()
+      const newDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${date.getMinutes()}`
+      const openId = user.gzhOpenid
+      let consume = 0 // 消费
+      let surplus = request.body.integral // 剩余
+      if (user.integral > request.body.integral) {
+        consume = user.integral - request.body.integral
+      }
+      if (user.integral !== request.body.integral) {
+        wx.send({
+          openId, consume, surplus, newDate
+        })
+      }
+      
       new Result(result, '更新成功').success(ctx)
     } else {
       new Result('', '更新失败').fail(ctx)
@@ -228,7 +252,6 @@ class HomeCtl {
     let { code, loginCode } = ctx.request.query
     let wx = new WXManager()
     await wx.init()
-   
     let result = await axios({
       url:  `https://api.weixin.qq.com/sns/jscode2session?appid=${appId}&secret=${appsecret}&js_code=${loginCode}&grant_type=authorization_code`,
       method: "get"
