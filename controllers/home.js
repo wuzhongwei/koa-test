@@ -6,6 +6,7 @@ const homePage = fs.readFileSync(path.join(__dirname, "../public/index.html"), "
 const {sequelize} = require('../db')
 const Result = require('../utils/result')
 const {appId, appsecret, gzhAppid, gzhSecret} = require('../config/config')
+const {zeroFill} = require('../utils/utils')
 const WXManager = require('../services/wx')
 const UserInfo = sequelize.define("UserInfo", {
   name: DataTypes.STRING(100), // 姓名
@@ -47,7 +48,15 @@ const UserInfo = sequelize.define("UserInfo", {
 },{
   timestamps: false
 });
-
+const getPhone = async (code, access_token) => {
+  return await axios({
+    url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${access_token}`,
+    method: "post",
+    data: {
+      code: code
+    }
+  })
+}
 class HomeCtl {
   index(ctx) {
     ctx.body = homePage;
@@ -124,8 +133,9 @@ class HomeCtl {
           ]
         }
       });
+      result = result ? result : {}
+      new Result(result, 'ok').success(ctx)
     }
-    new Result(result,'ok').success(ctx)
 
   }
 
@@ -174,7 +184,7 @@ class HomeCtl {
       let wx = new WXManager()
       await wx.init()
       const date = new Date()
-      const newDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${date.getMinutes()}`
+      const newDate = `${date.getFullYear()}年${zeroFill(date.getMonth() + 1)}月${zeroFill(date.getDate())}日 ${zeroFill(date.getHours())}:${zeroFill(date.getMinutes())}`
       const openId = user.gzhOpenid
       let consume = 0 // 消费
       let surplus = request.body.integral // 剩余
@@ -247,7 +257,7 @@ class HomeCtl {
     }
     ctx.redirect(returnurl)
   }
-
+  
   async wxPhone(ctx) {
     let { code, loginCode } = ctx.request.query
     let wx = new WXManager()
@@ -256,14 +266,16 @@ class HomeCtl {
       url:  `https://api.weixin.qq.com/sns/jscode2session?appid=${appId}&secret=${appsecret}&js_code=${loginCode}&grant_type=authorization_code`,
       method: "get"
     })
-    console.log('wx.tokenObj.access_token', wx.tokenObj.access_token)
-    let {data} = await axios({
-      url: `https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=${wx.tokenObj.access_token}`,
-      method: "post",
-      data: {
-        code: code
-      }
-    })
+
+    let {data} = await getPhone(code, wx.tokenObj.access_token)
+    console.log('wx.tokenObj.access_token1', wx.tokenObj.access_token)
+    if (data.errcode === 40001) {
+      await wx.forceUpdateToken(appId, appsecret, wx.xcxTokenPath, 'tokenObj')
+      let phone = await getPhone(code, wx.tokenObj.access_token)
+      console.log('wx.tokenObj.access_token2', wx.tokenObj.access_token)
+      data = phone.data
+    }
+ 
     ctx.body = {
       ...data,
       ...result.data

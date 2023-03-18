@@ -1,6 +1,6 @@
 const axios = require('axios')
 const fs = require('fs')
-const {appId, appsecret, gzhAppid, gzhSecret} = require('../config/config')
+const {appId: xcxId, appsecret: xcxKey, gzhAppid, gzhSecret} = require('../config/config')
 const menu = require('./menu')
 const accessTokenPath = './accessToken.txt'
 const xcxTokenPath = './xcxToken.txt'
@@ -10,12 +10,13 @@ class WXManager {
     this.tokenObj = {}
     this.gzhTokenObj = {}
     this.options = obj || {}
+    this.accessTokenPath = accessTokenPath
+    this.xcxTokenPath = xcxTokenPath
   }
   // 获取微信accessToken
   async getAccessToken(appId, appsecret) {
     const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appsecret}`
     let {data} = await axios.get(url)
-    console.log('data', data, appId, appsecret)
     data.expires_in = Date.now() + (data.expires_in - 300) * 1000 // 提前5分钟过期
     return data
   }
@@ -40,7 +41,7 @@ class WXManager {
 
   async init() {
     this.gzhTokenObj = await this.fetchAccessToken(gzhAppid, gzhSecret, accessTokenPath, this.gzhTokenObj) // 公众号
-    this.tokenObj = await this.fetchAccessToken(appId, appsecret, xcxTokenPath, this.tokenObj) // 小程序
+    this.tokenObj = await this.fetchAccessToken(xcxId, xcxKey, xcxTokenPath, this.tokenObj) // 小程序
   }
 
 
@@ -51,11 +52,14 @@ class WXManager {
     }
     return data.expires_in < Date.now()
   }
+  // 强制刷新token
+  async forceUpdateToken(appId, appsecret, tokenFile, token) {
+    const data = await this.getAccessToken(appId, appsecret)
+    this.saveAccessToken(data, tokenFile)
+    this[token] = data
+  }
   // 获取没有过期的token
   async fetchAccessToken(appId, appsecret, tokenFile, tokenObj) {
-    // if (tokenObj.expires_in && tokenObj.access_token && !this.isValidAccessToken(tokenObj)) {
-    //   return tokenObj
-    // }
 
     try {
       const data = await this.readAccessToken(tokenFile)
@@ -126,23 +130,23 @@ class WXManager {
       "data": {
         "first": {
             "value":"尊敬的会员你好，积分消费成功",
-            "color":"#173177"
+            "color":"#000"
         },
         "keyword1": {
           "value": gift,
-          "color":"#173177"
+          "color":"#000"
         },
         "keyword2": {
             "value": consume,
-            "color":"#173177"
+            "color":"#000"
         },
         "keyword3": {
             "value": surplus,
-            "color":"#173177"
+            "color":"#000"
         },
         "keyword4": {
           "value": newDate,
-          "color":"#173177"
+          "color":"#000"
         }
       }
     })

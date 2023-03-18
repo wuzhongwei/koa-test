@@ -7,7 +7,12 @@ const generateToken = function (uid, scope) {
   },security.secretKey,{expiresIn: security.expiresIn})
   return token
 }
+const zeroFill = (num) => {
+  return num < 10 ? '0'+ num : num
+}
+
 
 module.exports = {
-  generateToken
+  generateToken,
+  zeroFill
 }
