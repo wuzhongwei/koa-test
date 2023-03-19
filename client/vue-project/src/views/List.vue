@@ -15,6 +15,7 @@
     <el-table border :data="tableData" style="width: 100%">
       <el-table-column prop="name" label="姓名" width="120" />
       <el-table-column prop="phone" label="电话" width="120" />
+      <el-table-column prop="integral" label="积分" />
       <el-table-column prop="age" label="年龄" />
       <el-table-column prop="address" label="地址" />
       <el-table-column prop="birthday" label="生日"  width="120" />
@@ -32,7 +33,8 @@
       <el-table-column prop="eyeglassSellingPrice" label="镜片售价" width="120" />
       <el-table-column prop="totalPrice" label="总价" />
       <el-table-column prop="frontmoney" label="定金" />
-      <el-table-column prop="integral" label="尚欠" />
+      <el-table-column prop="notyetPrice" label="尚欠" />
+      
       <el-table-column label="操作" width="150" fixed="right">
         <template #default="scope">
         <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
