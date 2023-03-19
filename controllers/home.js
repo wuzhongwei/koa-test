@@ -240,19 +240,17 @@ class HomeCtl {
         console.log('error', error)
       }
     } else {
-      if (!wxOpenid && !data.openid) {  // 如果手机号存在，并且wxOpenid、openid为空，则更新
-        try {
-          await UserInfo.update({
-            openid: wxOpenid, // 微信openId
-            gzhOpenid: data.openid //公众号openId
-          }, {
-            where: {
-              phone: phone
-            }
-          });
-        } catch (error) {
-          console.log('saveUser更新失败', error)
-        }
+      try {
+        await UserInfo.update({
+          openid: wxOpenid, // 微信openId
+          gzhOpenid: data.openid //公众号openId
+        }, {
+          where: {
+            phone: phone
+          }
+        });
+      } catch (error) {
+        console.log('saveUser更新失败', error)
       }
     }
     ctx.redirect(returnurl)
