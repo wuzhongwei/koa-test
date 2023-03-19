@@ -4,3 +4,5 @@ Dockerfile.development
 .cloudbase
 package-lock.json
 .env
+accessToken.txt
+xcxToken.txt
