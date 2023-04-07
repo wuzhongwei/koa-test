@@ -126,27 +126,27 @@ class WXManager {
     const url = `https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=${this.gzhTokenObj.access_token}`
     let {data} = await axios.post(url, {
       "touser": openId,
-      "template_id":"4Yh8OKfn6TxmHIzNJO7xjM7h9soyVG-frPcbTHeKYhQ",
+      "template_id":"r2hFVbaCtCiCBiW6EBxakiHz4rl0EO12KEyvZ9Z03R0",
       "data": {
         "first": {
             "value":"尊敬的会员你好，积分消费成功",
             "color":"#000"
         },
         "keyword1": {
-          "value": gift,
+          "value": newDate,
           "color":"#000"
         },
         "keyword2": {
-            "value": consume,
+            "value": '黄流亮景眼镜',
             "color":"#000"
         },
         "keyword3": {
-            "value": surplus,
+            "value": consume, // 剩余
             "color":"#000"
         },
         "keyword4": {
-          "value": newDate,
-          "color":"#000"
+          "value": surplus,
+          "color":"#E20a06"
         }
       }
     })
@@ -158,7 +158,12 @@ class WXManager {
 // (async function() {
 //   const w = new WXManager()
 //   await w.init()
-//   await w.send()
+//   await w.send({
+//     openId: 'xx',
+//     consume: '200',
+//     surplus: '剩余300',
+//     newDate:'2022-20-2'
+//   })
 //   console.log('发送成功')
 // })()
 

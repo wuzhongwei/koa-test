@@ -189,7 +189,9 @@ class HomeCtl {
       let consume = 0 // 消费
       let surplus = request.body.integral // 剩余
       if (user.integral > request.body.integral) {
-        consume = user.integral - request.body.integral
+        // consume = user.integral - request.body.integral
+      } else {
+        consume = request.body.integral - user.integral // 获得
       }
       if (user.integral !== request.body.integral) {
         wx.send({

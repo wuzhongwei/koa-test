@@ -1,9 +1,9 @@
 const Koa = require("koa");
 const logger = require("koa-logger");
-const bodyParser = require("koa-bodyparser");
+const bodyParser = require("koa-bodyparser"); // 处理post请求
 const static = require('koa-static');
 const error = require('koa-json-error')
-const parameter = require('koa-parameter')
+const parameter = require('koa-parameter') // 参数校验
 const sha1 = require('sha1')
 const { init: initDB } = require("./db");
 const routing = require('./routers');
