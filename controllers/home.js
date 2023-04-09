@@ -45,8 +45,6 @@ const UserInfo = sequelize.define("UserInfo", {
     allowNull: false,
     defaultValue: 0,
   }
-},{
-  timestamps: false
 });
 const getPhone = async (code, access_token) => {
   return await axios({
