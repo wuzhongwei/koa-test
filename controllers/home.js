@@ -108,7 +108,8 @@ class HomeCtl {
     } else {
       result = await UserInfo.findAll({
         limit: pageSizes,
-        offset: (currentPage- 1) * pageSizes
+        offset: (currentPage- 1) * pageSizes,
+        order: [['id', 'DESC']]
       })
     }
     total = await UserInfo.count()
